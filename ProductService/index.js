@@ -1,8 +1,21 @@
 import express from 'express';
+import cors from 'cors';
+import { ConnectDB } from './db/products.js';
+import ProductRouter from './routers/productrouter.js'
 
 const app = express();
+app.disable('x-powered-by');
+app.use(cors())
+app.use(express.json());
 
-app.use("/", (req, res, next) => {
-    res.send("Hello from Product Service")
+app.use('/products', ProductRouter);
+app.use((err, req, res, next) => {
+    res.status(500).json({
+        success: false,
+        message: err.message
+    });
 })
-app.listen(3000, () => console.log("Server listening on port 3000"))
+
+await ConnectDB();
+
+app.listen(8080, () => console.log("Server listening on port 3000"))
