@@ -19,6 +19,7 @@ public class RabbitConfiguration {
 		return new Queue(receiveQueueName, true);
 	}
 
+
 	@Bean
 	public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
 		RabbitTemplate template = new RabbitTemplate(connectionFactory);

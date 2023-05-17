@@ -18,7 +18,6 @@ public class NotificationService {
 
 	@Autowired
 	private JavaMailSender javaMailSender;
-
 	public boolean sendEmail(MimeMessage mimeMessage) {
 		try {
 			javaMailSender.send(mimeMessage);
