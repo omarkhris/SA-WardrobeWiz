@@ -1,5 +1,5 @@
-🌐 Spring Boot Notification Service
-This is a Spring Boot application that provides a Notification Service. The project uses Springfox with OpenAPI 3.0 for API documentation, MailHog for email testing, and RabbitMQ for message queuing.
+🌐 Spring Boot Notification Service  
+This is a Spring Boot application that provides a Notification Service. The project uses Springfox with OpenAPI 3.0 for API documentation, MailHog for email testing, and RabbitMQ for message queuing.  
 
 🚀 Getting Started
 These instructions will help you set up the project on your local machine for development and testing purposes.
