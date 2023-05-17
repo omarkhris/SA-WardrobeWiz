@@ -8,23 +8,23 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController()
-@RequestMapping("/payment")
+@RequestMapping("/api/payment")
 public class PaymentController {
 
     @Autowired
     PaymentService paymentService;
 
-    @PostMapping("/save")
+    @PostMapping
     public void addPayment(@RequestBody Payment payment) {
         paymentService.savePayment(payment);
     }
 
-    @GetMapping("/get")
+    @GetMapping
     public List<Payment> getPayments() {
         return paymentService.getPayments();
     }
 
-    @GetMapping("/get/{userId}")
+    @GetMapping("{userId}")
     public List<Payment> getPaymentByUserId(@PathVariable String userId) {
         return paymentService.getPaymentByUserId(userId);
     }

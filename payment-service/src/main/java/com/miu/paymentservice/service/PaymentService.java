@@ -21,6 +21,7 @@ public class PaymentService {
         if (paymentRepository.findByOrderId(payment.getOrderId()).isPresent()) {
             throw new RuntimeException("Order Id already exists");
         }
+        payment.setId(null);
         return paymentRepository.save(payment);
     }
 
