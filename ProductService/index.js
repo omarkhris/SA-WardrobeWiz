@@ -21,5 +21,6 @@ app.use((err, req, res, next) => {
 })
 
 await ConnectDB();
+await CreateSeedData();
 
-app.listen(8080, () => console.log("Server listening on port 3000"))
+app.listen(8080, () => console.log("Server listening on port 8080"))
