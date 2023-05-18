@@ -56,7 +56,6 @@ export const CreateSeedData = async () => {
 
 export const GetProductsDB = async (filterObject) => {
     return await Product.find(filterObject)
-
 }
 
 export const UpdateProductDB = async (id, qty) => {

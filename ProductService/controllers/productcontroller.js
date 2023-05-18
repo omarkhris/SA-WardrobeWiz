@@ -10,7 +10,18 @@ export const GetProducts = async (req, res, next) => {
         next(error)
     }
 }
-
+export const GetProductById = async (req, res, next) => {
+    let id = req.params.id;
+    try {
+        const products = await GetProductByIdDB(id);
+        res.json({
+            success: true,
+            data: products
+        });
+    } catch (error) {
+        next(error)
+    }
+}
 export const GetClothes = async (req, res, next) => {
     try {
         const products = await GetProductsDB({ category: 'clothing' });
