@@ -26,9 +26,10 @@ public class CartDao {
 
     public List<CartItem> findCartByUserId(String userId) {
         List<CartItem> list = (List<CartItem>) template.opsForHash().get(Constants.CART_HASH, userId);
-        if (list != null) {
-            deleteCart(userId);
+        if (list == null) {
+            throw new RuntimeException("No data available with this user-id");
         }
+        deleteCart(userId);
         return list;
     }
 
