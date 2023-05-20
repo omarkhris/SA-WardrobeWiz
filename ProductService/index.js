@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { ConnectDB } from './db/products.js';
+import { ConnectDB, CreateSeedData } from './db/products.js';
 import ProductRouter from './routers/productrouter.js'
 
 const app = express();
@@ -9,6 +9,10 @@ app.use(cors())
 app.use(express.json());
 
 app.use('/products', ProductRouter);
+
+app.get('/', (req, res) => {
+    res.send("hello from home")
+});
 app.use((err, req, res, next) => {
     res.status(500).json({
         success: false,
@@ -17,5 +21,6 @@ app.use((err, req, res, next) => {
 })
 
 await ConnectDB();
+await CreateSeedData();
 
-app.listen(8080, () => console.log("Server listening on port 3000"))
+app.listen(8080, () => console.log("Server listening on port 8080"))

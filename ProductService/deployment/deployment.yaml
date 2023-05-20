@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dep-product-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pod-product-service
+  template:
+    metadata:
+      labels:
+        app: pod-product-service
+    spec:
+      containers:
+      - name: con-product-service
+        image: wardrobewiz.azurecr.io/product-service:v1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+            - name: TEST_SERVER_URL
+              value: http://test-server.svc.cluster.local
+      imagePullSecrets:
+        - name: acr-secret
