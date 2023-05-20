@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 @Service
 public class ShoppingCart {
-    String costumerId;
+    String customerId;
     private List<ShoppingCartItem> prods = new ArrayList<>();
 
     public List<ShoppingCartItem> getProds() {
@@ -21,27 +21,27 @@ public class ShoppingCart {
 
     public ShoppingCart() {}
 
-    public ShoppingCart(String costumerId) {
-        this.costumerId = costumerId;
+    public ShoppingCart(String customerId) {
+        this.customerId = customerId;
         this.prods = new ArrayList<ShoppingCartItem>();
 
     }
 
-    public ShoppingCart(String costumerId, List<ShoppingCartItem> prods) {
-        this.costumerId = costumerId;
+    public ShoppingCart(String customerId, List<ShoppingCartItem> prods) {
+        this.customerId = customerId;
         this.prods = prods;
 
 
     }
 
-    ShoppingCart addItem(ShoppingCartItem item, String costumerId){
+    ShoppingCart addItem(ShoppingCartItem item, String customerId){
         prods.add(item);
-        this.costumerId = costumerId;
+        this.customerId = customerId;
         return this;
     }
 
-    ShoppingCart getCart(String costumerId, List<ShoppingCartItem> itemsList){
+    ShoppingCart getCart(String customerId, List<ShoppingCartItem> itemsList){
 
-        return new ShoppingCart(costumerId,itemsList);
+        return new ShoppingCart(customerId,itemsList);
     }
 }

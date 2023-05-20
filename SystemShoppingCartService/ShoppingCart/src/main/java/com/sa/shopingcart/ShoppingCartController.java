@@ -11,7 +11,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/shoppingCart")
+@RequestMapping("/api/cart")
 public class ShoppingCartController {
 
 
@@ -19,51 +19,52 @@ public class ShoppingCartController {
     private RedisService redisService;
 
     @ResponseBody
-    @PostMapping("/addItem")
-    ShoppingCart addItemToShoppingCart(@RequestBody ShoppingCartItem item, @RequestParam(value = "costumerID") String costumerID){
+    @PostMapping
+    ShoppingCart addItemToShoppingCart(@RequestBody ShoppingCartItem item, @RequestParam(value = "customerId") String customerId){
 
         ShoppingCart myCart = null;
         try{
             //if the user did not has a cart, a null pointer exception will occur
             myCart = new ShoppingCart()
-                    .getCart(costumerID, StringAndList.StringToList((String) redisService.getValue(costumerID)));
+                    .getCart(customerId, StringAndList.StringToList((String) redisService.getValue(customerId)));
         }catch (NullPointerException e){
-            myCart = new ShoppingCart(costumerID);
+            myCart = new ShoppingCart(customerId);
         }
         //in case this user did not have a cart
         if(myCart.getProds().size() == 0){
-            myCart.addItem(item, costumerID);
-            redisService.setValue(myCart.costumerId, StringAndList.ListToString(myCart.getProds()));
-            //myCart.costumerId = costumerID;
+            myCart.addItem(item, customerId);
+            redisService.setValue(myCart.customerId, StringAndList.ListToString(myCart.getProds()));
+            //myCart.customerId = customerId;
 
         }else{
-            myCart.addItem(item, costumerID);
-            redisService.setValue(myCart.costumerId, StringAndList.ListToString(myCart.getProds()));
+            myCart.addItem(item, customerId);
+            redisService.setValue(myCart.customerId, StringAndList.ListToString(myCart.getProds()));
 
         }
         return myCart;
     }
 
 
-    @GetMapping("/getCart")
+    @GetMapping
     @ResponseBody
-    ShoppingCart getItemFromShoppingCart(@RequestParam(value = "costumerID") String costumerId){
+    ShoppingCart getItemFromShoppingCart(@RequestParam(value = "customerId") String customerId){
 
-        return new ShoppingCart().getCart(costumerId, StringAndList.StringToList((String) redisService.getValue(costumerId)));
+        return new ShoppingCart().getCart(customerId, StringAndList.StringToList((String) redisService.getValue(customerId)));
     }
 
 
-    @DeleteMapping("/deleteItem")
+    @DeleteMapping
     @ResponseBody
-    ShoppingCart deleteItem(@RequestParam(value = "costumerID") String costumerID, @RequestParam(value = "itemId") String itemId){
+    ShoppingCart deleteItem(@RequestParam(value = "customerId") String customerId, @RequestParam(value = "itemId") String itemId){
         //get shopping cart items from db
-        List<ShoppingCartItem> items = StringAndList.StringToList((String) redisService.getValue(costumerID));
+        List<ShoppingCartItem> items = StringAndList.StringToList((String) redisService.getValue(customerId));
         for(int i = 0; i < items.size(); i++){
             if(items.get(i).prodId.equals(itemId)){
                 items.remove(i);
             }
         }
-        return new ShoppingCart(costumerID, items);
+        redisService.setValue(customerId,StringAndList.ListToString(items));
+        return new ShoppingCart(customerId, items);
     }
 
 }
