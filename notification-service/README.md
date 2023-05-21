@@ -22,8 +22,8 @@ This will start MailHog on ports 8025 (web interface) and 1025 (SMTP), and Rabbi
 🏗️ Build and Run the Application. 
 Navigate to the project folder and use Maven to build and run the application:  
 cd spring-boot-notification. 
-mvn clean install. 
-mvn spring-boot:run. 
+mvn clean install
+mvn spring-boot:run
 The application will start on port 8087.  
 
 📚 API Documentation. 
