@@ -13,7 +13,7 @@ import lombok.Setter;
 @Setter @Getter
 public class Payment {
     private Long id;
-    private String userId;
+    private int userId;
     private String orderId;
     private Double amount;
     private String currency;

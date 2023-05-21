@@ -18,8 +18,8 @@ public class OrderServiceApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Order o = new Order(null, 2L, 1L, null);
-        System.out.println(orderService.createOrder(o));
+        //Order o = new Order(null, 2L, 1L, null);
+        //System.out.println(orderService.createOrder(o));
     }
 
 }

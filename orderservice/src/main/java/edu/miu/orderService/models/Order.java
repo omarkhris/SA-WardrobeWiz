@@ -28,10 +28,9 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderId;
+
     
-    private Long cartId;
-    
-    private Long userId;
+    private int userId;
     
     @Enumerated(EnumType.STRING)
     private Status status;//shipment status

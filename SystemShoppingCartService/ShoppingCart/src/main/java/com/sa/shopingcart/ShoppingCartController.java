@@ -19,8 +19,8 @@ public class ShoppingCartController {
     private RedisService redisService;
 
     @ResponseBody
-    @PostMapping
-    ShoppingCart addItemToShoppingCart(@RequestBody ShoppingCartItem item, @RequestParam(value = "customerId") String customerId){
+    @PostMapping("/{customerId}")
+    ShoppingCart addItemToShoppingCart(@RequestBody ShoppingCartItem item, @PathVariable String customerId){
 
         ShoppingCart myCart = null;
         try{
@@ -45,17 +45,17 @@ public class ShoppingCartController {
     }
 
 
-    @GetMapping
+    @GetMapping("/{customerId}")
     @ResponseBody
-    ShoppingCart getItemFromShoppingCart(@RequestParam(value = "customerId") String customerId){
+    ShoppingCart getItemFromShoppingCart(@PathVariable String customerId){
 
         return new ShoppingCart().getCart(customerId, StringAndList.StringToList((String) redisService.getValue(customerId)));
     }
 
 
-    @DeleteMapping
+    @DeleteMapping("/{customerId}/{itemId}")
     @ResponseBody
-    ShoppingCart deleteItem(@RequestParam(value = "customerId") String customerId, @RequestParam(value = "itemId") String itemId){
+    ShoppingCart deleteItem(@PathVariable String customerId, @PathVariable String itemId){
         //get shopping cart items from db
         List<ShoppingCartItem> items = StringAndList.StringToList((String) redisService.getValue(customerId));
         for(int i = 0; i < items.size(); i++){
