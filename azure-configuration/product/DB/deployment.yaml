@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dep-products-db
+spec:
+  selector:
+    matchLabels:
+      app: pod-products-db
+  template:
+    metadata:
+      labels:
+        app: pod-products-db
+    spec:
+      containers:
+        - name: con-products-db
+          image: mongo:6.0.2-focal
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: products-db-storage
+              mountPath: /data/db
+      volumes:
+        - name: products-db-storage
+          persistentVolumeClaim:
+            claimName: products-db-pvc

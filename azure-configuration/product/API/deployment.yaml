@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dep-product-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pod-product-service
+  template:
+    metadata:
+      labels:
+        app: pod-product-service
+    spec:
+      containers:
+      - name: con-product-service
+        image: wardrobewiz.azurecr.io/product-service:v2
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+            - name: TEST_SERVER_URL
+              value: http://test-server:80/
+            - name: MONGO_URL
+              value: mongodb://products-db:27017/products
+      imagePullSecrets:
+        - name: acr-secret
