@@ -8,7 +8,8 @@ const productSchema = new Schema({
     description: String,
     color: String,
     category: String,
-    quantity: Number
+    quantity: Number,
+    price: Number
 });
 
 const Product = model('Product', productSchema);
@@ -34,20 +35,23 @@ export const CreateSeedData = async () => {
         const randomAdj = adjectives[Math.floor(Math.random() * adjectives.length)];
         const randomSeason = seasons[Math.floor(Math.random() * seasons.length)];
         const randomNumber = Math.floor(Math.random() * 100) + 1;
+        const randomPrice = (Math.random() * (5 - 1) + 1).toFixed(2);
 
         let clothingProduct = {
             name: randomColor + ' ' + randomclothingItem,
             description: `${randomAdj} ${randomclothingItem} perfect for ${randomSeason}`,
             color: randomColor,
             category: "clothing",
-            quantity: randomNumber
+            quantity: randomNumber,
+            price: randomPrice
         }
         let footwearProduct = {
             name: randomColor + ' ' + randomfootwearItem,
             description: `${randomAdj} ${randomfootwearItem} perfect for ${randomSeason}`,
             color: randomColor,
             category: "footwear",
-            quantity: randomNumber
+            quantity: randomNumber,
+            price: randomPrice
         }
         items.push(clothingProduct, footwearProduct);
     }
