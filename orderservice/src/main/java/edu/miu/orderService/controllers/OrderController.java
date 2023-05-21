@@ -30,10 +30,11 @@ public class OrderController {
         return orderService.getOrders();
     }
 
-    @PostMapping
-    public Order createOrder(@RequestBody Order order) {
+    @PostMapping("/{userId}")
 
-        return orderService.createOrder(order);
+    public Order createOrder(@PathVariable int userId) {
+
+        return orderService.createOrder(userId);
 
     }
 
