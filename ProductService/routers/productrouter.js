@@ -6,7 +6,7 @@ let ProductRouter = Router();
 ProductRouter.get('/', GetProducts)
 ProductRouter.get('/clothes', GetClothes)
 ProductRouter.get('/shoes', GetShoes)
-ProductRouter.patch('/:id', UpdateProduct)
+ProductRouter.post('/:id', UpdateProduct)
 ProductRouter.get('/:id', GetProductById)
 
 export default ProductRouter;
