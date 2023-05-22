@@ -4,23 +4,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.miu.orderService.models.*;
 import edu.miu.orderService.repositories.OrderRepository;
 import edu.miu.orderService.services.OrderService;
-import java.util.List;
+import edu.miu.orderService.services.RabbitMQSenderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-/**
- *
- * @author Daniel Tsegay Meresie
- */
+import java.util.List;
+import java.util.Map;
+
 @Service
 public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private OrderRepository orderRepository;
+
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private RabbitMQSenderService rabbitMQSenderService;
+
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public List<Order> getOrders() {
@@ -30,7 +35,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order createOrder(int userId) {
         // step 1 get all the carts that this user has from cart service
-        String url = "http://localhost:8888/api/cart/" + userId; // Replace with your actual endpoint URL
+        String url = "http://localhost:9292/api/cart/" + userId; // Replace with your actual endpoint URL
 
         ResponseEntity<Cart> response = restTemplate.exchange(url, HttpMethod.GET, null, Cart.class);
         Cart c = response.getBody();
@@ -57,7 +62,7 @@ public class OrderServiceImpl implements OrderService {
             }
         }
         // make a post request to reduce the quantity
-        // even if the payment is not successfull because the payment will be pending, waiting to be completed
+        // even if the payment is not successful because the payment will be pending, waiting to be completed
         for(Product p : c.getProds()){
             RestTemplate restTemplate = new RestTemplate();
 
@@ -68,16 +73,12 @@ public class OrderServiceImpl implements OrderService {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
-
             String requestBody = "{\"order_quantity\": \"" + p.getQuantity() + "\"}";
 
             // Create HttpEntity with headers and request body
             HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
             restTemplate.exchange(url4, HttpMethod.POST, requestEntity, String.class).getStatusCode();
-
         }
-
-
 
         Payment p = new Payment();
         Order o = new Order(null, userId, Status.UNPAID);
@@ -101,16 +102,11 @@ public class OrderServiceImpl implements OrderService {
         if (responsee.getStatusCode().is2xxSuccessful()) {
             o.setStatus(Status.IN_TRANSIT);
             // Payment added successfully
-            
-            
-            
+
             return orderRepository.save(o);
-            
         } else {
             // Handle error response
         }
-
-
 
         return orderRepository.save(o);
     }
@@ -131,5 +127,4 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.delete(order);
         return order;
     }
-
 }
