@@ -15,8 +15,8 @@ public class PaymentController {
     PaymentService paymentService;
 
     @PostMapping
-    public void addPayment(@RequestBody Payment payment) {
-        paymentService.savePayment(payment);
+    public String addPayment(@RequestBody Payment payment) {
+        return paymentService.savePayment(payment);
     }
 
     @GetMapping

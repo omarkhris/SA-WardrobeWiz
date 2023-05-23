@@ -14,7 +14,7 @@ public class PaymentService {
     @Autowired
     private PaymentRepository paymentRepository;
 
-    public Payment savePayment(Payment payment) {
+    public String savePayment(Payment payment) {
         if (!Validator.isCardNumberValid(payment.getCardNumber(), payment.getCardType())) {
             throw new RuntimeException("Provided Card Information is not valid");
         }
@@ -22,7 +22,8 @@ public class PaymentService {
             throw new RuntimeException("Order Id already exists");
         }
         payment.setId(null);
-        return paymentRepository.save(payment);
+        paymentRepository.save(payment);
+        return "Payment information saved successfully";
     }
 
     public List<Payment> getPayments() {
