@@ -89,6 +89,10 @@ public class OrderServiceImpl implements OrderService {
     private void updateProductQuantities(Cart c) {
         for(Product p : c.getProds()){
             String url = productServiceUrl + "/" + p.getProdId() ;
+            System.out.println("Call this"+url);
+            System.out.println("Call this");
+            System.out.println("Call this");
+            System.out.println("Call this");
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             String requestBody = "{\"order_quantity\": \"" + p.getQuantity() + "\"}";
