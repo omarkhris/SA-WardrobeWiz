@@ -18,12 +18,8 @@ spec:
           ports:
             - containerPort: 8080
           env:
-            - name: SPRING_DATASOURCE_URL
-              value: jdbc:postgresql://postgres.default.svc.cluster.local:5432/user
-            - name: SPRING_DATASOURCE_USERNAME
-              value: postgres
-            - name: SPRING_DATASOURCE_PASSWORD
-              value: post123
+            - name: SPRING_DATA_MONGODB_URI
+              value: mongodb://mongodb.default.svc.cluster.local:27017/user
 ---
 apiVersion: v1
 kind: Service
