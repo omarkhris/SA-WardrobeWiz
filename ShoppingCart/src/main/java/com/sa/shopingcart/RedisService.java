@@ -19,7 +19,10 @@ public class RedisService {
     }
 
     public Object getValue(String key) {
-        System.out.println(redisTemplate.opsForValue().get(key));
         return redisTemplate.opsForValue().get(key);
+    }
+
+    public void deleteCart(String key) {
+        redisTemplate.delete(key);
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.server.PathParam;
 import java.util.List;
 
 
@@ -67,4 +68,11 @@ public class ShoppingCartController {
         return new ShoppingCart(customerId, items);
     }
 
+
+    @DeleteMapping("/{customerId}")
+    @ResponseBody
+    public String deleteCart(@PathVariable("customerId") String customerId){
+        deleteCart(customerId);
+        return "Cart of "+customerId+" deleted!";
+    }
 }
