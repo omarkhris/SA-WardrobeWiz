@@ -38,7 +38,7 @@ public class OrderController {
         // Remove the "Bearer " prefix from the token
         token = token.replace("Bearer ", "");
 
-        String email = JwtUtil.extractEmailFromToken(token);
+        String email = "dummy@email.com";//JwtUtil.extractEmailFromToken(token);
 
         rabbitMQSenderService.sendOrderConfirmation(
                 "sender@example.com",
