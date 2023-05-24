@@ -33,7 +33,7 @@ public class OrderController {
         // Send mail for created order
         rabbitMQSenderService.sendOrderConfirmation(
                 "sender@example.com",
-                List.of("receiver@example.com","receiver2@example.com","receiver3@example.com"),
+                List.of("receiver@example.com"),
                 "Order Confirmation",
                 "Your order has been created",
                 List.of()
