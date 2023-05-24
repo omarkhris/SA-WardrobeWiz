@@ -9,13 +9,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
 import java.util.Map;
 
 @Service
 public class OrderServiceImpl implements OrderService {
+    @Value("${cart.service.url}")
+    private String cartServiceUrl;
 
+    @Value("${product.service.url}")
+    private String productServiceUrl;
+
+    @Value("${payment.service.url}")
+    private String paymentServiceUrl;
     @Autowired
     private OrderRepository orderRepository;
 
@@ -34,81 +42,88 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order createOrder(int userId) {
-        // step 1 get all the carts that this user has from cart service
-        String url = "http://localhost:9292/api/cart/" + userId; // Replace with your actual endpoint URL
+        Cart c = retrieveCartForUser(userId);
+        ResponseDataFromProduct response = retrieveProductData();
+        validateProductQuantities(c, response);
+        double price = computePrice(c, response);
+        updateProductQuantities(c);
+        Order order = initializeOrder(userId, price);
+        processPayment(order, price);
+        return orderRepository.save(order);
+    }
 
+    private Cart retrieveCartForUser(int userId) {
+        String url = cartServiceUrl + "/" + userId;
         ResponseEntity<Cart> response = restTemplate.exchange(url, HttpMethod.GET, null, Cart.class);
-        Cart c = response.getBody();
+        return response.getBody();
+    }
 
-        String url2 = "http://localhost:8080/products";
-        ResponseEntity<ResponseDataFromProduct> response2 = restTemplate.exchange(url2, HttpMethod.GET, null, ResponseDataFromProduct.class);
-        System.out.println(response2.getBody());
+    private ResponseDataFromProduct retrieveProductData() {
+        String url = productServiceUrl;
+        ResponseEntity<ResponseDataFromProduct> response = restTemplate.exchange(url, HttpMethod.GET, null, ResponseDataFromProduct.class);
+        return response.getBody();
+    }
 
-        System.out.println(c);
+    private void validateProductQuantities(Cart c, ResponseDataFromProduct response) {
         for(Product p : c.getProds()){
-            for(Product2 p2 : response2.getBody().getData()){
+            for(Product2 p2 : response.getData()){
                 if(p.getProdId().equals(p2.get_id()) && p.getQuantity() > p2.getQuantity()){
-                    throw new RuntimeException("not enough products for product with Id + " + p.getProdId());
+                    throw new RuntimeException("Not enough products for product with Id + " + p.getProdId());
                 }
             }
         }
-        // now compute the price
+    }
+
+    private double computePrice(Cart c, ResponseDataFromProduct response) {
         double price = 0;
         for(Product p : c.getProds()){
-            for(Product2 p2 : response2.getBody().getData()){
+            for(Product2 p2 : response.getData()){
                 if(p.getProdId().equals(p2.get_id()) ){
                     price += p.getQuantity() * p2.getPrice();
                 }
             }
         }
-        // make a post request to reduce the quantity
-        // even if the payment is not successful because the payment will be pending, waiting to be completed
+        return price;
+    }
+
+    private void updateProductQuantities(Cart c) {
         for(Product p : c.getProds()){
-            RestTemplate restTemplate = new RestTemplate();
-
-            // Set the URL of the API endpoint
-            String url4 = "http://localhost:8080/products/" + p.getProdId() ;
-
-            // Create HttpHeaders and set the Content-Type to application/json
+            String url = productServiceUrl + "/" + p.getProdId() ;
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-
             String requestBody = "{\"order_quantity\": \"" + p.getQuantity() + "\"}";
-
-            // Create HttpEntity with headers and request body
             HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
-            restTemplate.exchange(url4, HttpMethod.POST, requestEntity, String.class).getStatusCode();
+            restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class).getStatusCode();
         }
+    }
 
+    private Order initializeOrder(int userId, double price) {
+        Order order = new Order(null, userId, Status.UNPAID);
+        return orderRepository.save(order);
+    }
+
+
+    private void processPayment(Order order, double price) {
         Payment p = new Payment();
-        Order o = new Order(null, userId, Status.UNPAID);
-        o = orderRepository.save(o);
         p.setAmount(price);
         p.setCardNumber("1234123412341234");
         p.setCardType("VISA");
-        p.setOrderId(o.getOrderId().toString());
+        p.setOrderId(order.getOrderId().toString());
         p.setCurrency("USD");
-        p.setUserId(o.getUserId());
+        p.setUserId(order.getUserId());
         p.setId(null);
-        String apiUrl = "http://localhost:8081/api/payment";
+        String apiUrl = paymentServiceUrl;
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<Payment> request = new HttpEntity<>(p, headers);
 
-        ResponseEntity<Void> responsee = restTemplate.postForEntity(apiUrl, request, Void.class);
+        ResponseEntity<Void> response = restTemplate.postForEntity(apiUrl, request, Void.class);
 
-        if (responsee.getStatusCode().is2xxSuccessful()) {
-            o.setStatus(Status.IN_TRANSIT);
-            // Payment added successfully
-
-            return orderRepository.save(o);
-        } else {
-            // Handle error response
+        if (response.getStatusCode().is2xxSuccessful()) {
+            order.setStatus(Status.IN_TRANSIT);
         }
-
-        return orderRepository.save(o);
     }
 
     @Override

@@ -12,6 +12,8 @@ import edu.miu.orderService.services.RabbitMQSenderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+// Import the Status enum
+import edu.miu.orderService.models.Status;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -49,32 +51,27 @@ public class OrderController {
         return order;
     }
 
-    @PostMapping("/{orderId}/delivery")
-    public ResponseEntity<String> sendDeliveryEmail(@PathVariable Long orderId) {
-        Order order = orderService.getOrder(orderId);
-        if (order == null) {
-            return ResponseEntity.notFound().build();
-        }
-        // Send mail for delivery order
-        rabbitMQSenderService.sendDeliveryConfirmation(
-                "sender@example.com",
-                List.of("receiver@example.com","receiver1@example.com"),
-                "Delivery Confirmation",
-                "Your order has been delivered",
-                List.of()
-        );
-
-        return ResponseEntity.ok("Delivery email sent successfully.");
-    }
-
     @GetMapping("/{orderId}")
     public Order getOrder(@PathVariable Long orderId) {
         return orderService.getOrder(orderId);
     }
 
     @PutMapping
-    public Order updateOrder(@RequestBody Order order) {
-        return orderService.updateOrder(order);
+    public Order updateOrder(@RequestBody Order order, @RequestHeader("Authorization") String token) {
+        Order updatedOrder = orderService.updateOrder(order);
+        String email = JwtUtil.extractEmailFromToken(token);
+        // Check if the order status is updated to DELIVERED
+        if(updatedOrder.getStatus() == Status.DELIVERED) {
+            // Send mail for delivery order
+            rabbitMQSenderService.sendDeliveryConfirmation(
+                    "sender@example.com",
+                    List.of(email),
+                    "Delivery Confirmation",
+                    "Your order has been delivered",
+                    List.of()
+            );
+        }
+        return updatedOrder;
     }
 
     @DeleteMapping("/{orderId}")
