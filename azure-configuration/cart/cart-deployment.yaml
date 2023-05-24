@@ -13,8 +13,8 @@ spec:
         app: cart
     spec:
       containers:
-        - name: your-app-container
-          image: your-docker-image:latest
+        - name: cart
+          image:  microservicedesign.azurecr.io/cart
           ports:
             - containerPort: 9292
           env:
