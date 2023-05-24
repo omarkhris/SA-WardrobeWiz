@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: your-app-deployment
+  name: cart
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: your-app
+      app: cart
   template:
     metadata:
       labels:
-        app: your-app
+        app: cart
     spec:
       containers:
         - name: your-app-container
@@ -19,17 +19,17 @@ spec:
             - containerPort: 9292
           env:
             - name: SPRING_REDIS_HOST
-              value: your-redis-host
+              value: your-redis-host.default.svc.cluster.local
             - name: SPRING_REDIS_PORT
               value: "6379"
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: your-app-service
+  name: cart
 spec:
   selector:
-    app: your-app
+    app: cart
   ports:
     - port: 80
       targetPort: 9292
