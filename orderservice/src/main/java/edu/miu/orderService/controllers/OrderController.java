@@ -1,6 +1,8 @@
 package edu.miu.orderService.controllers;
 
 import java.util.List;
+
+import edu.miu.orderService.JwtUtil;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import edu.miu.orderService.models.Order;
@@ -27,13 +29,18 @@ public class OrderController {
     }
 
     @PostMapping("/{userId}")
-    public Order createOrder(@PathVariable int userId) {
+    public Order createOrder(@PathVariable int userId, @RequestHeader("Authorization") String token) {
         Order order = orderService.createOrder(userId);
 
         // Send mail for created order
+        // Remove the "Bearer " prefix from the token
+        token = token.replace("Bearer ", "");
+
+        String email = JwtUtil.extractEmailFromToken(token);
+
         rabbitMQSenderService.sendOrderConfirmation(
                 "sender@example.com",
-                List.of("receiver@example.com"),
+                List.of(email),
                 "Order Confirmation",
                 "Your order has been created",
                 List.of()
