@@ -77,6 +77,7 @@ public class ShoppingCartController {
         for(int i = 0; i < items.size(); i++){
             if(items.get(i).prodId.equals(itemId)){
                 items.remove(i);
+                break;
             }
         }
         redisService.setValue(customerId,StringAndList.ListToString(items));
@@ -87,7 +88,12 @@ public class ShoppingCartController {
     @DeleteMapping("/{customerId}")
     @ResponseBody
     public String deleteCart(@PathVariable("customerId") String customerId){
-        deleteCart(customerId);
-        return "Cart of "+customerId+" deleted!";
+       
+        try{
+            deleteCart(customerId);
+            return "Cart of "+customerId+" deleted!";
+        }catch (Exception e){
+            return "Something Went Wrong. Maybe this customer "+customerId+" has no cart!";
+        }
     }
 }
