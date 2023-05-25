@@ -59,8 +59,13 @@ public class ShoppingCartController {
     @GetMapping("/{customerId}")
     @ResponseBody
     ShoppingCart getItemFromShoppingCart(@PathVariable String customerId){
+        
+        try{
+            return new ShoppingCart().getCart(customerId, StringAndList.StringToList((String) redisService.getValue(customerId)));
 
-        return new ShoppingCart().getCart(customerId, StringAndList.StringToList((String) redisService.getValue(customerId)));
+        }catch (Exception e){
+            return new ShoppingCart("This Customer ("+customerId+") Has No Cart Yet");
+        }
     }
 
 
